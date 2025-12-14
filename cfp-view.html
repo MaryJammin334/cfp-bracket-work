@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View My CFP Bracket</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5016;
+            --field-green: #3a6b23;
+            --gold: #ffb81c;
+            --white: #ffffff;
+            --light-gray: #f0f0f0;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #2d2d2d;
+            --correct: #00ff00;
+            --incorrect: #ff0000;
+        }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f1f0f 100%);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(45, 80, 22, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid var(--gold);
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3em;
+            color: var(--gold);
+            text-shadow: 3px 3px 0 var(--primary-green);
+            letter-spacing: 3px;
+        }
+
+        .lookup-section {
+            background: rgba(45, 45, 45, 0.6);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 184, 28, 0.2);
+        }
+
+        .lookup-section h2 {
+            font-family: 'Bebas Neue', cursive;
+            color: var(--gold);
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        input[type="email"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 2px solid var(--field-green);
+            border-radius: 5px;
+            background: rgba(26, 26, 26, 0.8);
+            color: var(--white);
+            font-size: 1.1em;
+            font-family: 'Roboto Condensed', sans-serif;
+            margin-right: 10px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+
+        .lookup-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #ffa500 100%);
+            color: var(--dark-gray);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.1em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .lookup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 184, 28, 0.6);
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, var(--field-green) 0%, var(--primary-green) 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 30px rgba(255, 184, 28, 0.3);
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: var(--light-gray);
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3em;
+            color: var(--gold);
+            text-shadow: 2px 2px 0 var(--primary-green);
+        }
+
+        .rank-display {
+            font-size: 2.5em;
+            margin-top: 15px;
+        }
+
+        .bracket-container {
+            background: rgba(45, 45, 45, 0.6);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 184, 28, 0.2);
+        }
+
+        .rounds {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .round {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .round-title {
+            text-align: center;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.5em;
+            color: var(--gold);
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .matchup {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 184, 28, 0.3);
+        }
+
+        .bowl-name {
+            background: var(--primary-green);
+            color: var(--gold);
+            padding: 8px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .team {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .team:last-child {
+            border-bottom: none;
+        }
+
+        .team.my-pick {
+            background: rgba(58, 107, 35, 0.5);
+            font-weight: 700;
+        }
+
+        .team.correct {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid var(--correct);
+        }
+
+        .team.incorrect {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid var(--incorrect);
+            opacity: 0.6;
+        }
+
+        .team.eliminated {
+            opacity: 0.4;
+            text-decoration: line-through;
+        }
+
+        .seed {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--dark-gray);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .team-logo {
+            height: 40px;
+            width: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .team-name {
+            flex: 1;
+            font-size: 1.1em;
+        }
+
+        .pick-indicator {
+            font-size: 1.5em;
+        }
+
+        .result-icon {
+            position: absolute;
+            right: 15px;
+            font-size: 1.5em;
+        }
+
+        .champion-display {
+            text-align: center;
+            padding: 30px;
+            background: rgba(255, 184, 28, 0.2);
+            border-radius: 10px;
+            border: 3px solid var(--gold);
+            margin-top: 20px;
+        }
+
+        .champion-label {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.8em;
+            color: var(--gold);
+        }
+
+        .champion-name {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        .tiebreaker-info {
+            margin-top: 15px;
+            font-size: 1.1em;
+            color: var(--light-gray);
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ffcccc;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .legend {
+            background: rgba(45, 45, 45, 0.6);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 184, 28, 0.2);
+        }
+
+        .legend h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .legend-items {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .legend-box {
+            width: 30px;
+            height: 30px;
+            border-radius: 5px;
+        }
+
+        .legend-my-pick {
+            background: rgba(58, 107, 35, 0.5);
+            border: 2px solid var(--field-green);
+        }
+
+        .legend-correct {
+            background: rgba(0, 255, 0, 0.2);
+            border: 2px solid var(--correct);
+        }
+
+        .legend-incorrect {
+            background: rgba(255, 0, 0, 0.2);
+            border: 2px solid var(--incorrect);
+        }
+
+        .legend-eliminated {
+            background: rgba(100, 100, 100, 0.2);
+            text-decoration: line-through;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            color: var(--gold);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .rounds {
+                flex-direction: column;
+            }
+
+            .score-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>👀 View My Bracket 👀</h1>
+            <div style="color: var(--light-gray); margin-top: 10px;">Check Your Picks & Score</div>
+        </header>
+
+        <div id="lookup-section" class="lookup-section">
+            <h2>Look Up Your Bracket</h2>
+            <p style="margin-bottom: 20px; color: var(--light-gray);">Enter the email you used when submitting</p>
+            <div>
+                <input type="email" id="lookup-email" placeholder="your.email@example.com">
+                <button class="lookup-btn" onclick="lookupBracket()">🔍 Find My Bracket</button>
+            </div>
+        </div>
+
+        <div id="error-section" style="display: none;">
+            <div class="error-message">
+                <h3 style="margin-bottom: 10px;">❌ Bracket Not Found</h3>
+                <p>We couldn't find a bracket with that email address.</p>
+                <p style="margin-top: 10px;">Make sure you're using the same email you submitted with, or <a href="cfp-bracket.html" style="color: var(--gold);">submit a new bracket</a>.</p>
+            </div>
+        </div>
+
+        <div id="bracket-section" style="display: none;">
+            <div class="score-banner">
+                <h2 style="font-family: 'Bebas Neue', cursive; font-size: 2.5em; color: var(--gold); margin-bottom: 20px;">Your Score</h2>
+                <div class="score-grid">
+                    <div class="score-item">
+                        <div class="score-label">Current Points</div>
+                        <div class="score-value" id="current-points">0</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Possible Points</div>
+                        <div class="score-value" id="possible-points">15</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Your Rank</div>
+                        <div class="score-value" id="player-rank">-</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="score-label">Total Players</div>
+                        <div class="score-value" id="total-players">0</div>
+                    </div>
+                </div>
+                <div class="rank-display" id="rank-display"></div>
+            </div>
+
+            <div class="legend">
+                <h3>Legend:</h3>
+                <div class="legend-items">
+                    <div class="legend-item">
+                        <div class="legend-box legend-my-pick"></div>
+                        <span>Your Pick</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box legend-correct"></div>
+                        <span>✅ Correct Pick</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box legend-incorrect"></div>
+                        <span>❌ Incorrect Pick</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box legend-eliminated"></div>
+                        <span>Team Eliminated</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bracket-container" id="bracket-display"></div>
+        </div>
+
+        <div class="nav-links">
+            <a href="cfp-bracket.html">🏈 Submit/Edit Bracket</a>
+            <a href="cfp-admin.html">📊 Admin Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        // Team logo mapping
+        const teamLogos = {
+            'Oregon': 'oregon.png',
+            'JMU': 'jmu.png',
+            'Ole Miss': 'ole-miss.png',
+            'Tulane': 'tulane.png',
+            'Texas A&M': 'texas-am.png',
+            'Miami': 'miami.png',
+            'Oklahoma': 'oklahoma.png',
+            'Alabama': 'alabama.png',
+            'Indiana': 'indiana.png',
+            'Ohio State': 'ohio-state.png',
+            'Georgia': 'georgia.png',
+            'Texas Tech': 'texas-tech.png'
+        };
+
+        // Auto-lookup if user has a saved ID
+        window.onload = function() {
+            const myId = localStorage.getItem('my-bracket-id');
+            if (myId) {
+                const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+                const mySubmission = submissions.find(s => s.id === myId);
+                if (mySubmission) {
+                    displayBracket(mySubmission);
+                    document.getElementById('lookup-section').style.display = 'none';
+                }
+            }
+        };
+
+        // Lookup bracket by email
+        function lookupBracket() {
+            const email = document.getElementById('lookup-email').value.trim().toLowerCase();
+            
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+            
+            const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            const submission = submissions.find(s => s.email.toLowerCase() === email);
+            
+            if (!submission) {
+                document.getElementById('error-section').style.display = 'block';
+                document.getElementById('bracket-section').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('error-section').style.display = 'none';
+            document.getElementById('lookup-section').style.display = 'none';
+            displayBracket(submission);
+        }
+
+        // Display bracket with results
+        function displayBracket(submission) {
+            document.getElementById('bracket-section').style.display = 'block';
+            
+            const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
+            const allSubmissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            
+            // Calculate score
+            let points = 0;
+            let possible = 15;
+            
+            // First round (1 point each)
+            for (let i = 1; i <= 4; i++) {
+                if (results['game' + i]) {
+                    const picked = submission.picks.firstRound[i];
+                    if (picked && results['game' + i].includes(picked.teamName)) {
+                        points += 1;
+                    }
+                }
+            }
+            
+            // Quarterfinals (2 points each)
+            for (let i = 5; i <= 8; i++) {
+                if (results['game' + i]) {
+                    const picked = submission.picks.quarters[i];
+                    if (picked && results['game' + i].includes(picked.teamName)) {
+                        points += 2;
+                    }
+                }
+            }
+            
+            // Semifinals (4 points each)
+            for (let i = 9; i <= 10; i++) {
+                if (results['game' + i]) {
+                    const picked = submission.picks.semis[i];
+                    if (picked && results['game' + i].includes(picked.teamName)) {
+                        points += 4;
+                    }
+                }
+            }
+            
+            // Championship (8 points)
+            if (results.game11) {
+                if (submission.picks.champion && results.game11.includes(submission.picks.champion)) {
+                    points += 8;
+                }
+            }
+            
+            // Calculate rank
+            const scored = allSubmissions.map(s => {
+                let p = 0;
+                for (let i = 1; i <= 4; i++) {
+                    if (results['game' + i] && s.picks.firstRound[i] && results['game' + i].includes(s.picks.firstRound[i].teamName)) p += 1;
+                }
+                for (let i = 5; i <= 8; i++) {
+                    if (results['game' + i] && s.picks.quarters[i] && results['game' + i].includes(s.picks.quarters[i].teamName)) p += 2;
+                }
+                for (let i = 9; i <= 10; i++) {
+                    if (results['game' + i] && s.picks.semis[i] && results['game' + i].includes(s.picks.semis[i].teamName)) p += 4;
+                }
+                if (results.game11 && s.picks.champion && results.game11.includes(s.picks.champion)) p += 8;
+                return { id: s.id, points: p };
+            }).sort((a, b) => b.points - a.points);
+            
+            const rank = scored.findIndex(s => s.id === submission.id) + 1;
+            
+            // Update score display
+            document.getElementById('current-points').textContent = points;
+            document.getElementById('possible-points').textContent = possible;
+            document.getElementById('player-rank').textContent = rank;
+            document.getElementById('total-players').textContent = allSubmissions.length;
+            
+            // Rank emoji
+            let rankEmoji = '';
+            if (rank === 1) rankEmoji = '🥇 1st Place!';
+            else if (rank === 2) rankEmoji = '🥈 2nd Place!';
+            else if (rank === 3) rankEmoji = '🥉 3rd Place!';
+            else rankEmoji = `#${rank}`;
+            document.getElementById('rank-display').textContent = rankEmoji;
+            
+            // Build bracket display
+            displayBracketRounds(submission, results);
+        }
+
+        function displayBracketRounds(submission, results) {
+            const container = document.getElementById('bracket-display');
+            
+            let html = '<div class="rounds">';
+            
+            // First Round
+            html += '<div class="round"><div class="round-title">First Round<br>Dec 19-20</div>';
+            
+            const firstRoundGames = [
+                { id: 1, teams: [{seed: 5, name: 'Oregon'}, {seed: 12, name: 'JMU'}] },
+                { id: 2, teams: [{seed: 6, name: 'Ole Miss'}, {seed: 11, name: 'Tulane'}] },
+                { id: 3, teams: [{seed: 7, name: 'Texas A&M'}, {seed: 10, name: 'Miami'}] },
+                { id: 4, teams: [{seed: 8, name: 'Oklahoma'}, {seed: 9, name: 'Alabama'}] }
+            ];
+            
+            firstRoundGames.forEach(game => {
+                html += '<div class="matchup">';
+                game.teams.forEach(team => {
+                    const picked = submission.picks.firstRound[game.id];
+                    const isPick = picked && picked.teamName === team.name;
+                    const result = results['game' + game.id];
+                    const isWinner = result && result.includes(team.name);
+                    const isEliminated = result && !result.includes(team.name);
+                    
+                    let classes = 'team';
+                    if (isPick) classes += ' my-pick';
+                    if (isPick && isWinner) classes += ' correct';
+                    if (isPick && isEliminated) classes += ' incorrect';
+                    if (isEliminated && !isPick) classes += ' eliminated';
+                    
+                    let icon = '';
+                    if (isPick && isWinner) icon = '<span class="result-icon">✅</span>';
+                    if (isPick && isEliminated) icon = '<span class="result-icon">❌</span>';
+                    if (isPick && !result) icon = '<span class="pick-indicator">👉</span>';
+                    
+                    const logoSrc = teamLogos[team.name] || '';
+                    html += `<div class="${classes}">
+                        <img src="${logoSrc}" class="team-logo" alt="${team.name}">
+                        <span class="team-name">${team.name}</span>
+                        ${icon}
+                    </div>`;
+                });
+                html += '</div>';
+            });
+            html += '</div>';
+            
+            // Quarterfinals
+            html += '<div class="round"><div class="round-title">Quarterfinals<br>Dec 31 - Jan 1</div>';
+            
+            const quarters = [
+                { id: 5, bowl: 'ROSE BOWL', top: {seed: 1, name: 'Indiana'}, bottom: 'Winner of 8/9' },
+                { id: 6, bowl: 'COTTON BOWL', top: {seed: 2, name: 'Ohio State'}, bottom: 'Winner of 7/10' },
+                { id: 7, bowl: 'SUGAR BOWL', top: {seed: 3, name: 'Georgia'}, bottom: 'Winner of 6/11' },
+                { id: 8, bowl: 'ORANGE BOWL', top: {seed: 4, name: 'Texas Tech'}, bottom: 'Winner of 5/12' }
+            ];
+            
+            quarters.forEach(game => {
+                html += `<div class="matchup"><div class="bowl-name">${game.bowl}</div>`;
+                
+                // Top seed
+                const picked = submission.picks.quarters[game.id];
+                const isPick = picked && picked.teamName === game.top.name;
+                const result = results['game' + game.id];
+                const isWinner = result && result.includes(game.top.name);
+                const isEliminated = result && !result.includes(game.top.name);
+                
+                let classes = 'team';
+                if (isPick) classes += ' my-pick';
+                if (isPick && isWinner) classes += ' correct';
+                if (isPick && isEliminated) classes += ' incorrect';
+                if (isEliminated && !isPick) classes += ' eliminated';
+                
+                let icon = '';
+                if (isPick && isWinner) icon = '<span class="result-icon">✅</span>';
+                if (isPick && isEliminated) icon = '<span class="result-icon">❌</span>';
+                if (isPick && !result) icon = '<span class="pick-indicator">👉</span>';
+                
+                const topLogoSrc = teamLogos[game.top.name] || '';
+                html += `<div class="${classes}">
+                    <img src="${topLogoSrc}" class="team-logo" alt="${game.top.name}">
+                    <span class="team-name">${game.top.name}</span>
+                    ${icon}
+                </div>`;
+                
+                // Bottom team (winner from first round)
+                let bottomName = game.bottom;
+                let bottomSeed = '';
+                
+                // Determine actual team if first round is complete
+                const frGameMap = {5: 4, 6: 3, 7: 2, 8: 1};
+                const frResult = results['game' + frGameMap[game.id]];
+                if (frResult) {
+                    bottomSeed = frResult.split('-')[0];
+                    bottomName = frResult.split('-')[1];
+                }
+                
+                const isPick2 = picked && picked.teamName === bottomName;
+                const isWinner2 = result && result.includes(bottomName);
+                const isEliminated2 = result && !result.includes(bottomName);
+                
+                classes = 'team';
+                if (isPick2) classes += ' my-pick';
+                if (isPick2 && isWinner2) classes += ' correct';
+                if (isPick2 && isEliminated2) classes += ' incorrect';
+                if (isEliminated2 && !isPick2) classes += ' eliminated';
+                
+                icon = '';
+                if (isPick2 && isWinner2) icon = '<span class="result-icon">✅</span>';
+                if (isPick2 && isEliminated2) icon = '<span class="result-icon">❌</span>';
+                if (isPick2 && !result && frResult) icon = '<span class="pick-indicator">👉</span>';
+                
+                const bottomLogoSrc = teamLogos[bottomName] || '';
+                html += `<div class="${classes}">
+                    <img src="${bottomLogoSrc}" class="team-logo" alt="${bottomName}">
+                    <span class="team-name">${bottomName}</span>
+                    ${icon}
+                </div>`;
+                
+                html += '</div>';
+            });
+            html += '</div>';
+            
+            // Semifinals
+            html += '<div class="round"><div class="round-title">Semifinals<br>Jan 8-9</div>';
+            const semis = [
+                { id: 9, bowl: 'FIESTA BOWL', top: 'Winner Rose Bowl', bottom: 'Winner Cotton Bowl', qGames: [5, 6] },
+                { id: 10, bowl: 'PEACH BOWL', top: 'Winner Sugar Bowl', bottom: 'Winner Orange Bowl', qGames: [7, 8] }
+            ];
+            
+            semis.forEach(game => {
+                html += `<div class="matchup"><div class="bowl-name">${game.bowl}</div>`;
+                
+                [game.top, game.bottom].forEach((label, idx) => {
+                    const qGame = game.qGames[idx];
+                    let teamName = label;
+                    let teamSeed = '';
+                    
+                    if (results['game' + qGame]) {
+                        teamSeed = results['game' + qGame].split('-')[0];
+                        teamName = results['game' + qGame].split('-')[1];
+                    }
+                    
+                    const picked = submission.picks.semis[game.id];
+                    const isPick = picked && picked.teamName === teamName;
+                    const result = results['game' + game.id];
+                    const isWinner = result && result.includes(teamName);
+                    const isEliminated = result && !result.includes(teamName);
+                    
+                    let classes = 'team';
+                    if (isPick) classes += ' my-pick';
+                    if (isPick && isWinner) classes += ' correct';
+                    if (isPick && isEliminated) classes += ' incorrect';
+                    if (isEliminated && !isPick) classes += ' eliminated';
+                    
+                    let icon = '';
+                    if (isPick && isWinner) icon = '<span class="result-icon">✅</span>';
+                    if (isPick && isEliminated) icon = '<span class="result-icon">❌</span>';
+                    if (isPick && !result && results['game' + qGame]) icon = '<span class="pick-indicator">👉</span>';
+                    
+                    const logoSrc = teamLogos[teamName] || '';
+                    html += `<div class="${classes}">
+                        ${logoSrc ? `<img src="${logoSrc}" class="team-logo" alt="${teamName}">` : ''}
+                        <span class="team-name">${teamName}</span>
+                        ${icon}
+                    </div>`;
+                });
+                
+                html += '</div>';
+            });
+            html += '</div>';
+            
+            // Championship
+            html += '<div class="round"><div class="round-title">Championship<br>Jan 19, 2026</div>';
+            html += '<div class="matchup"><div class="bowl-name">CFP NATIONAL CHAMPIONSHIP</div>';
+            
+            [9, 10].forEach((sGame, idx) => {
+                let teamName = idx === 0 ? 'Winner Fiesta Bowl' : 'Winner Peach Bowl';
+                let teamSeed = '';
+                
+                if (results['game' + sGame]) {
+                    teamSeed = results['game' + sGame].split('-')[0];
+                    teamName = results['game' + sGame].split('-')[1];
+                }
+                
+                const isPick = submission.picks.champion === teamName;
+                const result = results.game11;
+                const isWinner = result && result.includes(teamName);
+                const isEliminated = result && !result.includes(teamName);
+                
+                let classes = 'team';
+                if (isPick) classes += ' my-pick';
+                if (isPick && isWinner) classes += ' correct';
+                if (isPick && isEliminated) classes += ' incorrect';
+                if (isEliminated && !isPick) classes += ' eliminated';
+                
+                let icon = '';
+                if (isPick && isWinner) icon = '<span class="result-icon">✅</span>';
+                if (isPick && isEliminated) icon = '<span class="result-icon">❌</span>';
+                if (isPick && !result && results['game' + sGame]) icon = '<span class="pick-indicator">👉</span>';
+                
+                const logoSrc = teamLogos[teamName] || '';
+                html += `<div class="${classes}">
+                    ${logoSrc ? `<img src="${logoSrc}" class="team-logo" alt="${teamName}">` : ''}
+                    <span class="team-name">${teamName}</span>
+                    ${icon}
+                </div>`;
+            });
+            
+            html += '</div>';
+            
+            // Champion display
+            html += '<div class="champion-display">';
+            html += '<div class="champion-label">🏆 YOUR CHAMPION 🏆</div>';
+            html += `<div class="champion-name">${submission.picks.champion}</div>`;
+            html += `<div class="tiebreaker-info">Tiebreaker Prediction: <strong>${submission.tiebreaker} points</strong></div>`;
+            
+            if (results.game11) {
+                if (results.game11.includes(submission.picks.champion)) {
+                    html += '<div style="margin-top: 15px; font-size: 1.5em; color: var(--correct);">✅ Correct Champion!</div>';
+                } else {
+                    html += '<div style="margin-top: 15px; font-size: 1.5em; color: var(--incorrect);">❌ Champion Eliminated</div>';
+                }
+            }
+            
+            html += '</div>';
+            
+            html += '</div>'; // End championship round
+            html += '</div>'; // End rounds
+            
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1016 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CFP Bracket - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-green: #2d5016;
+            --field-green: #3a6b23;
+            --gold: #ffb81c;
+            --white: #ffffff;
+            --light-gray: #f0f0f0;
+            --dark-gray: #1a1a1a;
+            --medium-gray: #2d2d2d;
+        }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f1f0f 100%);
+            color: var(--white);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(45, 80, 22, 0.3);
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid var(--gold);
+        }
+
+        h1 {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 3em;
+            color: var(--gold);
+            text-shadow: 3px 3px 0 var(--primary-green);
+            letter-spacing: 3px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            background: rgba(45, 45, 45, 0.6);
+            padding: 15px 30px;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .tab:hover {
+            background: rgba(58, 107, 35, 0.4);
+        }
+
+        .tab.active {
+            background: var(--field-green);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(45, 45, 45, 0.6);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            font-family: 'Bebas Neue', cursive;
+            color: var(--gold);
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .section {
+            background: rgba(26, 26, 26, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 184, 28, 0.3);
+        }
+
+        .game-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: rgba(58, 107, 35, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid var(--field-green);
+        }
+
+        .game-card h3 {
+            color: var(--gold);
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .game-team {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .game-team:hover {
+            background: rgba(58, 107, 35, 0.5);
+        }
+
+        .game-team input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .team-logo {
+            height: 35px;
+            width: auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .seed {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--dark-gray);
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 25px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #ffa500 100%);
+            color: var(--dark-gray);
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.2em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Bebas Neue', cursive;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 184, 28, 0.6);
+        }
+
+        .danger-btn {
+            background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+            color: white;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: var(--field-green);
+            color: var(--gold);
+            font-weight: 700;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background: rgba(58, 107, 35, 0.2);
+        }
+
+        .rank-badge {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--dark-gray);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .rank-1 {
+            background: gold;
+            box-shadow: 0 0 10px gold;
+        }
+
+        .rank-2 {
+            background: silver;
+            color: var(--dark-gray);
+        }
+
+        .rank-3 {
+            background: #cd7f32;
+        }
+
+        .view-btn {
+            background: var(--field-green);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: var(--primary-green);
+        }
+
+        .stat-card {
+            background: rgba(58, 107, 35, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid var(--gold);
+        }
+
+        .stat-value {
+            font-size: 3em;
+            font-weight: 700;
+            color: var(--gold);
+            font-family: 'Bebas Neue', cursive;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: var(--light-gray);
+            margin-top: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #ccffcc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--dark-gray);
+            margin: 50px auto;
+            padding: 30px;
+            max-width: 900px;
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 2em;
+            color: var(--gold);
+            cursor: pointer;
+        }
+
+        .bracket-view {
+            margin-top: 20px;
+        }
+
+        .bracket-round {
+            margin-bottom: 30px;
+        }
+
+        .bracket-matchup {
+            background: rgba(58, 107, 35, 0.2);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .nav-links {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .nav-links a {
+            color: var(--gold);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: var(--white);
+            text-shadow: 0 0 10px var(--gold);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .game-selector {
+                grid-template-columns: 1fr;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏈 Admin Dashboard 🏈</h1>
+            <div style="color: var(--light-gray); margin-top: 10px;">Manage Brackets & Leaderboard</div>
+        </header>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('results')">Enter Results</div>
+            <div class="tab" onclick="switchTab('leaderboard')">Leaderboard</div>
+            <div class="tab" onclick="switchTab('submissions')">All Submissions</div>
+            <div class="tab" onclick="switchTab('export')">Export Data</div>
+        </div>
+
+        <!-- ENTER RESULTS TAB -->
+        <div id="results-tab" class="tab-content active">
+            <h2>Enter Game Results</h2>
+            
+            <div id="results-saved" class="success" style="display: none;">
+                ✅ Results saved! Leaderboard has been updated.
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">First Round (1 point each)</h3>
+                <div class="game-selector">
+                    <div class="game-card">
+                        <h3>Game 1: 5 vs 12</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game1" value="5-Oregon">
+                            <img src="oregon.png" class="team-logo" alt="Oregon">
+                            <span>Oregon</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game1" value="12-JMU">
+                            <img src="jmu.png" class="team-logo" alt="JMU">
+                            <span>JMU</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Game 2: 6 vs 11</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game2" value="6-Ole Miss">
+                            <img src="ole-miss.png" class="team-logo" alt="Ole Miss">
+                            <span>Ole Miss</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game2" value="11-Tulane">
+                            <img src="tulane.png" class="team-logo" alt="Tulane">
+                            <span>Tulane</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Game 3: 7 vs 10</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game3" value="7-Texas A&M">
+                            <img src="texas-am.png" class="team-logo" alt="Texas A&M">
+                            <span>Texas A&M</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game3" value="10-Miami">
+                            <img src="miami.png" class="team-logo" alt="Miami">
+                            <span>Miami</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Game 4: 8 vs 9</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game4" value="8-Oklahoma">
+                            <img src="oklahoma.png" class="team-logo" alt="Oklahoma">
+                            <span>Oklahoma</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game4" value="9-Alabama">
+                            <img src="alabama.png" class="team-logo" alt="Alabama">
+                            <span>Alabama</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">Quarterfinals (2 points each)</h3>
+                <div class="game-selector">
+                    <div class="game-card">
+                        <h3>Rose Bowl: 1 vs Winner 8/9</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game5" value="1-Indiana">
+                            <img src="indiana.png" class="team-logo" alt="Indiana">
+                            <span>Indiana</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game5" value="tbd" disabled>
+                            <span>Winner of 8/9</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Cotton Bowl: 2 vs Winner 7/10</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game6" value="2-Ohio State">
+                            <img src="ohio-state.png" class="team-logo" alt="Ohio State">
+                            <span>Ohio State</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game6" value="tbd" disabled>
+                            <span>Winner of 7/10</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Sugar Bowl: 3 vs Winner 6/11</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game7" value="3-Georgia">
+                            <img src="georgia.png" class="team-logo" alt="Georgia">
+                            <span>Georgia</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game7" value="tbd" disabled>
+                            <span>Winner of 6/11</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Orange Bowl: 4 vs Winner 5/12</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game8" value="4-Texas Tech">
+                            <img src="texas-tech.png" class="team-logo" alt="Texas Tech">
+                            <span>Texas Tech</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game8" value="tbd" disabled>
+                            <span>Winner of 5/12</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">Semifinals (4 points each)</h3>
+                <div class="game-selector">
+                    <div class="game-card">
+                        <h3>Fiesta Bowl</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game9" value="tbd" disabled>
+                            <span>Winner Rose Bowl</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game9" value="tbd" disabled>
+                            <span>Winner Cotton Bowl</span>
+                        </label>
+                    </div>
+
+                    <div class="game-card">
+                        <h3>Peach Bowl</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game10" value="tbd" disabled>
+                            <span>Winner Sugar Bowl</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game10" value="tbd" disabled>
+                            <span>Winner Orange Bowl</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">Championship (8 points)</h3>
+                <div class="game-selector">
+                    <div class="game-card">
+                        <h3>National Championship</h3>
+                        <label class="game-team">
+                            <input type="radio" name="game11" value="tbd" disabled>
+                            <span>Winner Fiesta Bowl</span>
+                        </label>
+                        <label class="game-team">
+                            <input type="radio" name="game11" value="tbd" disabled>
+                            <span>Winner Peach Bowl</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="save-btn" onclick="saveResults()">💾 Save Results & Update Leaderboard</button>
+            </div>
+        </div>
+
+        <!-- LEADERBOARD TAB -->
+        <div id="leaderboard-tab" class="tab-content">
+            <h2>Leaderboard</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-players">0</div>
+                    <div class="stat-label">Total Players</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="games-complete">0 / 11</div>
+                    <div class="stat-label">Games Complete</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-score">0</div>
+                    <div class="stat-label">Average Score</div>
+                </div>
+            </div>
+
+            <div class="section">
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Points</th>
+                            <th>Possible</th>
+                            <th>Champion Pick</th>
+                            <th>Tiebreaker</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body">
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 40px;">
+                                No submissions yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ALL SUBMISSIONS TAB -->
+        <div id="submissions-tab" class="tab-content">
+            <h2>All Submissions</h2>
+            
+            <div class="section">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Submitted At</th>
+                            <th>Champion</th>
+                            <th>Tiebreaker</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissions-body">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px;">
+                                No submissions yet
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- EXPORT DATA TAB -->
+        <div id="export-tab" class="tab-content">
+            <h2>Export & Manage Data</h2>
+            
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">Export Options</h3>
+                <p style="margin-bottom: 20px;">Download all bracket data and results</p>
+                <button class="save-btn" onclick="exportToCSV()">📥 Download as CSV</button>
+                <button class="save-btn" onclick="exportToJSON()" style="margin-left: 10px;">📥 Download as JSON</button>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 15px;">⚠️ Danger Zone</h3>
+                <p style="margin-bottom: 20px; color: #ffcccc;">These actions cannot be undone!</p>
+                <button class="save-btn danger-btn" onclick="clearAllResults()">🗑️ Clear All Results</button>
+                <button class="save-btn danger-btn" onclick="clearAllSubmissions()" style="margin-left: 10px;">🗑️ Clear All Submissions</button>
+            </div>
+        </div>
+
+        <div class="nav-links">
+            <a href="cfp-bracket.html">🏈 Player Bracket</a>
+            <a href="cfp-view.html">👀 View Bracket</a>
+        </div>
+    </div>
+
+    <!-- Bracket View Modal -->
+    <div id="bracket-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <h2 id="modal-player-name"></h2>
+            <div id="modal-bracket-content"></div>
+        </div>
+    </div>
+
+    <script>
+        // Team logo mapping
+        const teamLogos = {
+            'Oregon': 'oregon.png',
+            'JMU': 'jmu.png',
+            'Ole Miss': 'ole-miss.png',
+            'Tulane': 'tulane.png',
+            'Texas A&M': 'texas-am.png',
+            'Miami': 'miami.png',
+            'Oklahoma': 'oklahoma.png',
+            'Alabama': 'alabama.png',
+            'Indiana': 'indiana.png',
+            'Ohio State': 'ohio-state.png',
+            'Georgia': 'georgia.png',
+            'Texas Tech': 'texas-tech.png'
+        };
+
+        // Initialize
+        window.onload = function() {
+            loadResults();
+            updateLeaderboard();
+            loadSubmissions();
+        };
+
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            if (tabName === 'leaderboard') {
+                updateLeaderboard();
+            } else if (tabName === 'submissions') {
+                loadSubmissions();
+            }
+        }
+
+        // Load saved results
+        function loadResults() {
+            const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
+            
+            for (let i = 1; i <= 11; i++) {
+                if (results['game' + i]) {
+                    const radio = document.querySelector(`input[name="game${i}"][value="${results['game' + i]}"]`);
+                    if (radio) radio.checked = true;
+                }
+            }
+            
+            // Enable next round options based on results
+            updateGameOptions();
+        }
+
+        // Update game options based on first round results
+        function updateGameOptions() {
+            const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
+            
+            // Quarterfinals
+            if (results.game4) {
+                const winner = results.game4.split('-')[1];
+                const seed = results.game4.split('-')[0];
+                const logoSrc = teamLogos[winner] || '';
+                const input = document.querySelector('input[name="game5"][value="tbd"]');
+                input.value = results.game4;
+                input.disabled = false;
+                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+            }
+            
+            if (results.game3) {
+                const winner = results.game3.split('-')[1];
+                const seed = results.game3.split('-')[0];
+                const logoSrc = teamLogos[winner] || '';
+                const input = document.querySelector('input[name="game6"][value="tbd"]');
+                input.value = results.game3;
+                input.disabled = false;
+                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+            }
+            
+            if (results.game2) {
+                const winner = results.game2.split('-')[1];
+                const seed = results.game2.split('-')[0];
+                const logoSrc = teamLogos[winner] || '';
+                const input = document.querySelector('input[name="game7"][value="tbd"]');
+                input.value = results.game2;
+                input.disabled = false;
+                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+            }
+            
+            if (results.game1) {
+                const winner = results.game1.split('-')[1];
+                const seed = results.game1.split('-')[0];
+                const logoSrc = teamLogos[winner] || '';
+                const input = document.querySelector('input[name="game8"][value="tbd"]');
+                input.value = results.game1;
+                input.disabled = false;
+                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+            }
+            
+            // Continue for semifinals and championship...
+        }
+
+        // Save results
+        function saveResults() {
+            const results = {};
+            
+            for (let i = 1; i <= 11; i++) {
+                const selected = document.querySelector(`input[name="game${i}"]:checked`);
+                if (selected) {
+                    results['game' + i] = selected.value;
+                }
+            }
+            
+            localStorage.setItem('cfp-results', JSON.stringify(results));
+            
+            document.getElementById('results-saved').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('results-saved').style.display = 'none';
+            }, 3000);
+            
+            updateGameOptions();
+            updateLeaderboard();
+        }
+
+        // Calculate scores
+        function calculateScores() {
+            const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
+            
+            const scored = submissions.map(sub => {
+                let points = 0;
+                let possible = 15; // Total possible points: 4+8+8+8 = 28, but only what's still alive
+                
+                // First round (1 point each)
+                for (let i = 1; i <= 4; i++) {
+                    if (results['game' + i]) {
+                        const pickedTeam = sub.picks.firstRound[i];
+                        if (pickedTeam && results['game' + i].includes(pickedTeam.teamName)) {
+                            points += 1;
+                        }
+                    }
+                }
+                
+                // Quarterfinals (2 points each)
+                for (let i = 5; i <= 8; i++) {
+                    if (results['game' + i]) {
+                        const pickedTeam = sub.picks.quarters[i];
+                        if (pickedTeam && results['game' + i].includes(pickedTeam.teamName)) {
+                            points += 2;
+                        }
+                    }
+                }
+                
+                // Semifinals (4 points each)
+                for (let i = 9; i <= 10; i++) {
+                    if (results['game' + i]) {
+                        const pickedTeam = sub.picks.semis[i];
+                        if (pickedTeam && results['game' + i].includes(pickedTeam.teamName)) {
+                            points += 4;
+                        }
+                    }
+                }
+                
+                // Championship (8 points)
+                if (results.game11) {
+                    if (sub.picks.champion && results.game11.includes(sub.picks.champion)) {
+                        points += 8;
+                    }
+                }
+                
+                return {
+                    ...sub,
+                    points,
+                    possible
+                };
+            });
+            
+            // Sort by points, then by tiebreaker proximity
+            scored.sort((a, b) => {
+                if (b.points !== a.points) return b.points - a.points;
+                // Tiebreaker logic would go here
+                return 0;
+            });
+            
+            return scored;
+        }
+
+        // Update leaderboard
+        function updateLeaderboard() {
+            const scored = calculateScores();
+            const tbody = document.getElementById('leaderboard-body');
+            const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
+            const gamesComplete = Object.keys(results).length;
+            
+            // Update stats
+            document.getElementById('total-players').textContent = scored.length;
+            document.getElementById('games-complete').textContent = gamesComplete + ' / 11';
+            if (scored.length > 0) {
+                const avgScore = (scored.reduce((sum, s) => sum + s.points, 0) / scored.length).toFixed(1);
+                document.getElementById('avg-score').textContent = avgScore;
+            }
+            
+            if (scored.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; padding: 40px;">No submissions yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = scored.map((player, index) => {
+                const rank = index + 1;
+                let rankBadge = `<span class="rank-badge">${rank}</span>`;
+                if (rank === 1) rankBadge = `<span class="rank-badge rank-1">🥇 ${rank}</span>`;
+                else if (rank === 2) rankBadge = `<span class="rank-badge rank-2">🥈 ${rank}</span>`;
+                else if (rank === 3) rankBadge = `<span class="rank-badge rank-3">🥉 ${rank}</span>`;
+                
+                return `
+                    <tr>
+                        <td>${rankBadge}</td>
+                        <td><strong>${player.name}</strong></td>
+                        <td style="font-size: 1.3em; font-weight: 700; color: var(--gold);">${player.points}</td>
+                        <td>${player.possible}</td>
+                        <td>${player.picks.champion || 'Not selected'}</td>
+                        <td>${player.tiebreaker}</td>
+                        <td><button class="view-btn" onclick="viewBracket('${player.id}')">View Bracket</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load all submissions
+        function loadSubmissions() {
+            const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            const tbody = document.getElementById('submissions-body');
+            
+            if (submissions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding: 40px;">No submissions yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = submissions.map(sub => {
+                const date = new Date(sub.submittedAt).toLocaleString();
+                return `
+                    <tr>
+                        <td><strong>${sub.name}</strong></td>
+                        <td>${sub.email}</td>
+                        <td>${date}</td>
+                        <td>${sub.picks.champion || 'Not selected'}</td>
+                        <td>${sub.tiebreaker}</td>
+                        <td><button class="view-btn" onclick="viewBracket('${sub.id}')">View</button></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // View bracket modal
+        function viewBracket(id) {
+            const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            const sub = submissions.find(s => s.id === id);
+            if (!sub) return;
+            
+            document.getElementById('modal-player-name').textContent = sub.name + "'s Bracket";
+            document.getElementById('bracket-modal').style.display = 'block';
+            
+            // Display bracket details
+            let html = '<div class="bracket-view">';
+            html += '<div class="bracket-round"><h3 style="color: var(--gold);">First Round</h3>';
+            Object.entries(sub.picks.firstRound).forEach(([matchup, pick]) => {
+                html += `<div class="bracket-matchup">Game ${matchup}: <strong>${pick.teamName}</strong></div>`;
+            });
+            html += '</div>';
+            
+            html += '<div class="bracket-round"><h3 style="color: var(--gold);">Quarterfinals</h3>';
+            Object.entries(sub.picks.quarters).forEach(([matchup, pick]) => {
+                html += `<div class="bracket-matchup">Game ${matchup}: <strong>${pick.teamName}</strong></div>`;
+            });
+            html += '</div>';
+            
+            html += '<div class="bracket-round"><h3 style="color: var(--gold);">Semifinals</h3>';
+            Object.entries(sub.picks.semis).forEach(([matchup, pick]) => {
+                html += `<div class="bracket-matchup">Game ${matchup}: <strong>${pick.teamName}</strong></div>`;
+            });
+            html += '</div>';
+            
+            html += `<div class="bracket-round"><h3 style="color: var(--gold);">Champion</h3>`;
+            html += `<div class="bracket-matchup"><strong style="font-size: 1.5em;">🏆 ${sub.picks.champion}</strong></div>`;
+            html += `<div style="margin-top: 15px;">Tiebreaker Prediction: <strong>${sub.tiebreaker} points</strong></div>`;
+            html += '</div>';
+            
+            html += '</div>';
+            
+            document.getElementById('modal-bracket-content').innerHTML = html;
+        }
+
+        function closeModal() {
+            document.getElementById('bracket-modal').style.display = 'none';
+        }
+
+        // Export functions
+        function exportToCSV() {
+            const scored = calculateScores();
+            let csv = 'Rank,Name,Email,Points,Possible,Champion,Tiebreaker\n';
+            
+            scored.forEach((player, index) => {
+                csv += `${index + 1},${player.name},${player.email},${player.points},${player.possible},${player.picks.champion},${player.tiebreaker}\n`;
+            });
+            
+            downloadFile(csv, 'cfp-bracket-results.csv', 'text/csv');
+        }
+
+        function exportToJSON() {
+            const data = {
+                submissions: JSON.parse(localStorage.getItem('cfp-submissions') || '[]'),
+                results: JSON.parse(localStorage.getItem('cfp-results') || '{}'),
+                exported: new Date().toISOString()
+            };
+            
+            downloadFile(JSON.stringify(data, null, 2), 'cfp-bracket-data.json', 'application/json');
+        }
+
+        function downloadFile(content, filename, type) {
+            const blob = new Blob([content], { type });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear functions
+        function clearAllResults() {
+            if (confirm('Are you sure you want to clear all game results? This cannot be undone!')) {
+                localStorage.removeItem('cfp-results');
+                location.reload();
+            }
+        }
+
+        function clearAllSubmissions() {
+            if (confirm('Are you sure you want to delete ALL player submissions? This cannot be undone!')) {
+                localStorage.removeItem('cfp-submissions');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
