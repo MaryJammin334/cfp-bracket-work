@@ -394,10 +394,10 @@
 <body>
     <!-- Floating decorations -->
     <div class="decoration dec-1 football">🏈</div>
-    <div class="decoration dec-2 helmet">⛑️</div>
+    <div class="decoration dec-2 helmet">🚩</div>
     <div class="decoration dec-3 trophy">🏆</div>
     <div class="decoration dec-4 football">🏈</div>
-    <div class="decoration dec-5 helmet">⛑️</div>
+    <div class="decoration dec-5 helmet">☝️</div>
     <div class="decoration dec-6 football">🏈</div>
 
     <div class="container">
@@ -598,9 +598,20 @@
                 <button class="submit-btn" onclick="emailBracket()">
                     📧 Submit My Bracket to MJ
                 </button>
+                <button class="submit-btn" onclick="startOver()" style="background: linear-gradient(135deg, #666 0%, #888 100%); margin-left: 15px;">
+                    🔄 Start Over
+                </button>
                 <div style="color: #aaa; margin-top: 15px; font-size: 0.9em;">
                     Click the button above to email your picks directly to MJ
                 </div>
+            </div>
+            
+            <!-- Testing/Admin Clear Button -->
+            <div style="text-align: center; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,184,28,0.2);">
+                <button onclick="clearAllData()" style="background: #8b0000; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-family: 'Roboto Condensed', sans-serif; font-size: 0.9em;">
+                    🗑️ Clear All Data (Testing Only)
+                </button>
+                <div style="color: #888; margin-top: 5px; font-size: 0.85em;">Admin use only - removes all saved brackets</div>
             </div>
         </div>
 
@@ -776,10 +787,102 @@
             `;
         }
 
-        // Email bracket to MJ
+        // Start Over - Clear all picks and reset form
+        function startOver() {
+            if (confirm('Are you sure you want to start over? This will clear all your picks.')) {
+                // Reset picks object
+                picks = {
+                    firstRound: {},
+                    quarters: {},
+                    semis: {},
+                    champion: null
+                };
+                
+                // Clear all visual selections
+                document.querySelectorAll('.team.selected').forEach(team => {
+                    team.classList.remove('selected');
+                });
+                
+                // Reset TBD teams in quarterfinals
+                document.getElementById('q5-team2').innerHTML = '<span class="team-name">Winner of 8/9</span>';
+                document.getElementById('q5-team2').className = 'team tbd';
+                document.getElementById('q5-team2').dataset.team = 'tbd';
+                
+                document.getElementById('q6-team2').innerHTML = '<span class="team-name">Winner of 7/10</span>';
+                document.getElementById('q6-team2').className = 'team tbd';
+                document.getElementById('q6-team2').dataset.team = 'tbd';
+                
+                document.getElementById('q7-team2').innerHTML = '<span class="team-name">Winner of 6/11</span>';
+                document.getElementById('q7-team2').className = 'team tbd';
+                document.getElementById('q7-team2').dataset.team = 'tbd';
+                
+                document.getElementById('q8-team2').innerHTML = '<span class="team-name">Winner of 5/12</span>';
+                document.getElementById('q8-team2').className = 'team tbd';
+                document.getElementById('q8-team2').dataset.team = 'tbd';
+                
+                // Reset semifinals
+                document.getElementById('s9-team1').innerHTML = '<span class="team-name">Winner Rose Bowl</span>';
+                document.getElementById('s9-team1').className = 'team tbd';
+                document.getElementById('s9-team1').dataset.team = 'tbd';
+                
+                document.getElementById('s9-team2').innerHTML = '<span class="team-name">Winner Cotton Bowl</span>';
+                document.getElementById('s9-team2').className = 'team tbd';
+                document.getElementById('s9-team2').dataset.team = 'tbd';
+                
+                document.getElementById('s10-team1').innerHTML = '<span class="team-name">Winner Sugar Bowl</span>';
+                document.getElementById('s10-team1').className = 'team tbd';
+                document.getElementById('s10-team1').dataset.team = 'tbd';
+                
+                document.getElementById('s10-team2').innerHTML = '<span class="team-name">Winner Orange Bowl</span>';
+                document.getElementById('s10-team2').className = 'team tbd';
+                document.getElementById('s10-team2').dataset.team = 'tbd';
+                
+                // Reset championship
+                document.getElementById('c11-team1').innerHTML = '<span class="team-name">Winner Fiesta Bowl</span>';
+                document.getElementById('c11-team1').className = 'team tbd';
+                document.getElementById('c11-team1').dataset.team = 'tbd';
+                
+                document.getElementById('c11-team2').innerHTML = '<span class="team-name">Winner Peach Bowl</span>';
+                document.getElementById('c11-team2').className = 'team tbd';
+                document.getElementById('c11-team2').dataset.team = 'tbd';
+                
+                // Hide champion display
+                document.getElementById('champion-display').style.display = 'none';
+                
+                // Clear form fields
+                document.getElementById('player-name').value = '';
+                document.getElementById('player-email').value = '';
+                document.getElementById('tiebreaker').value = '';
+                
+                // Hide messages
+                document.getElementById('error-message').style.display = 'none';
+                document.getElementById('success-message').style.display = 'none';
+                
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+        
+        // Clear All Data - For testing/admin purposes
+        function clearAllData() {
+            if (confirm('⚠️ WARNING: This will delete ALL saved brackets!\n\nThis is for testing only. Are you sure?')) {
+                if (confirm('Really delete everything? This cannot be undone!')) {
+                    localStorage.removeItem('cfp-submissions');
+                    localStorage.removeItem('my-bracket-id');
+                    localStorage.removeItem('cfp-results');
+                    alert('✅ All data has been cleared!');
+                    location.reload();
+                }
+            }
+        }
+
+        // Email bracket to MJ (COMBINED with localStorage save)
         function emailBracket() {
             const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+            
             errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
             
             // Validate picks
             if (Object.keys(picks.firstRound).length !== 4) {
@@ -822,7 +925,64 @@
                 return;
             }
             
-            // Build email body
+            // Create submission object
+            const submission = {
+                name,
+                email,
+                tiebreaker: parseInt(tiebreaker),
+                picks,
+                submittedAt: new Date().toISOString(),
+                id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            // SAVE TO LOCALSTORAGE FIRST
+            let submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            
+            // Check for duplicate email
+            const existingIndex = submissions.findIndex(s => s.email === email);
+            if (existingIndex >= 0) {
+                submissions[existingIndex] = submission;
+            } else {
+                submissions.push(submission);
+            }
+            
+            localStorage.setItem('cfp-submissions', JSON.stringify(submissions));
+            localStorage.setItem('my-bracket-id', submission.id);
+            
+            // Show detailed success message with picks summary
+            successDiv.innerHTML = `
+                <strong>✅ Your bracket has been saved successfully!</strong>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0,255,0,0.3);">
+                    <strong>Your Picks Summary:</strong><br>
+                    <div style="margin-top: 10px;">
+                        <strong>First Round:</strong><br>
+                        • Game 1: ${picks.firstRound[1]?.teamName}<br>
+                        • Game 2: ${picks.firstRound[2]?.teamName}<br>
+                        • Game 3: ${picks.firstRound[3]?.teamName}<br>
+                        • Game 4: ${picks.firstRound[4]?.teamName}
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>Quarterfinals:</strong><br>
+                        • Rose Bowl: ${picks.quarters[5]?.teamName}<br>
+                        • Cotton Bowl: ${picks.quarters[6]?.teamName}<br>
+                        • Sugar Bowl: ${picks.quarters[7]?.teamName}<br>
+                        • Orange Bowl: ${picks.quarters[8]?.teamName}
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>Semifinals:</strong><br>
+                        • Fiesta Bowl: ${picks.semis[9]?.teamName}<br>
+                        • Peach Bowl: ${picks.semis[10]?.teamName}
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>🏆 Champion: ${picks.champion}</strong><br>
+                        <strong>Tiebreaker: ${tiebreaker} points</strong>
+                    </div>
+                </div>
+            `;
+            successDiv.style.display = 'block';
+            successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // NOW BUILD EMAIL
             let body = `CFP BRACKET SUBMISSION\n`;
             body += `========================\n\n`;
             body += `Name: ${name}\n`;
@@ -860,84 +1020,6 @@
             
             // Open email client
             window.location.href = mailtoLink;
-        }
-
-        // Submit bracket
-        function submitBracket() {
-            const errorDiv = document.getElementById('error-message');
-            const successDiv = document.getElementById('success-message');
-            
-            errorDiv.style.display = 'none';
-            successDiv.style.display = 'none';
-            
-            // Validate picks
-            if (Object.keys(picks.firstRound).length !== 4) {
-                errorDiv.textContent = '⚠️ Please complete all First Round picks!';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            if (Object.keys(picks.quarters).length !== 4) {
-                errorDiv.textContent = '⚠️ Please complete all Quarterfinal picks!';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            if (Object.keys(picks.semis).length !== 2) {
-                errorDiv.textContent = '⚠️ Please complete all Semifinal picks!';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            if (!picks.champion) {
-                errorDiv.textContent = '⚠️ Please select your champion!';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Validate form fields
-            const name = document.getElementById('player-name').value.trim();
-            const email = document.getElementById('player-email').value.trim();
-            const tiebreaker = document.getElementById('tiebreaker').value;
-            
-            if (!name || !email || !tiebreaker) {
-                errorDiv.textContent = '⚠️ Please fill out all required fields!';
-                errorDiv.style.display = 'block';
-                return;
-            }
-            
-            // Create submission object
-            const submission = {
-                name,
-                email,
-                tiebreaker: parseInt(tiebreaker),
-                picks,
-                submittedAt: new Date().toISOString(),
-                id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
-            };
-            
-            // Store in localStorage
-            let submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
-            
-            // Check for duplicate email
-            const existingIndex = submissions.findIndex(s => s.email === email);
-            if (existingIndex >= 0) {
-                submissions[existingIndex] = submission;
-                successDiv.textContent = '✅ Your bracket has been updated successfully!';
-            } else {
-                submissions.push(submission);
-                successDiv.textContent = '✅ Your bracket has been submitted successfully!';
-            }
-            
-            localStorage.setItem('cfp-submissions', JSON.stringify(submissions));
-            
-            // Store user's submission ID for viewing later
-            localStorage.setItem('my-bracket-id', submission.id);
-            
-            successDiv.style.display = 'block';
-            
-            // Scroll to success message
-            successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
         // Load existing bracket if returning user
