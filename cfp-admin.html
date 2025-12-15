@@ -108,6 +108,54 @@
             border: 1px solid rgba(255, 184, 28, 0.3);
         }
 
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--field-green);
+            border-radius: 5px;
+            background: rgba(26, 26, 26, 0.8);
+            color: var(--white);
+            font-size: 1em;
+            font-family: 'Roboto Condensed', sans-serif;
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        select option {
+            background: var(--dark-gray);
+            padding: 10px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--gold);
+            box-shadow: 0 0 10px rgba(255, 184, 28, 0.3);
+        }
+
+        .picks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .game-selector {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -294,6 +342,15 @@
             margin-bottom: 20px;
         }
 
+        .warning {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ffcccc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -355,12 +412,24 @@
             text-shadow: 0 0 10px var(--gold);
         }
 
+        .info-box {
+            background: rgba(58, 107, 35, 0.2);
+            border-left: 4px solid var(--gold);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
         @media (max-width: 768px) {
             h1 {
                 font-size: 2em;
             }
 
             .game-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .picks-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -382,14 +451,194 @@
         </header>
 
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('results')">Enter Results</div>
+            <div class="tab active" onclick="switchTab('quick-entry')">⚡ Quick Entry</div>
+            <div class="tab" onclick="switchTab('results')">Enter Results</div>
             <div class="tab" onclick="switchTab('leaderboard')">Leaderboard</div>
             <div class="tab" onclick="switchTab('submissions')">All Submissions</div>
             <div class="tab" onclick="switchTab('export')">Export Data</div>
         </div>
 
+        <!-- QUICK ENTRY TAB -->
+        <div id="quick-entry-tab" class="tab-content active">
+            <h2>⚡ Quick Entry - Add Bracket from Email</h2>
+            
+            <div class="info-box">
+                <strong>💡 How to use:</strong> Copy the picks from the email you received and select them from the dropdowns below. Much faster than clicking through the full bracket!
+            </div>
+
+            <div id="quick-entry-success" class="success" style="display: none;"></div>
+            <div id="quick-entry-error" class="warning" style="display: none;"></div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 20px;">Player Information</h3>
+                
+                <div class="form-group">
+                    <label for="qe-name">Player Name *</label>
+                    <input type="text" id="qe-name" placeholder="Enter player's full name">
+                </div>
+
+                <div class="form-group">
+                    <label for="qe-email">Email Address *</label>
+                    <input type="email" id="qe-email" placeholder="player@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="qe-tiebreaker">Tiebreaker (Championship Total Points) *</label>
+                    <input type="number" id="qe-tiebreaker" placeholder="e.g., 65" min="0" max="200">
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 20px;">First Round Picks</h3>
+                <div class="picks-grid">
+                    <div class="form-group">
+                        <label>Game 1: 5-Oregon vs 12-JMU</label>
+                        <select id="qe-game1">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Oregon">Oregon</option>
+                            <option value="JMU">JMU</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Game 2: 6-Ole Miss vs 11-Tulane</label>
+                        <select id="qe-game2">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Ole Miss">Ole Miss</option>
+                            <option value="Tulane">Tulane</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Game 3: 7-Texas A&M vs 10-Miami</label>
+                        <select id="qe-game3">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Texas A&M">Texas A&M</option>
+                            <option value="Miami">Miami</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Game 4: 8-Oklahoma vs 9-Alabama</label>
+                        <select id="qe-game4">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Oklahoma">Oklahoma</option>
+                            <option value="Alabama">Alabama</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 20px;">Quarterfinal Picks</h3>
+                <div class="picks-grid">
+                    <div class="form-group">
+                        <label>Rose Bowl: 1-Indiana vs Winner 8/9</label>
+                        <select id="qe-game5">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Indiana">Indiana</option>
+                            <option value="Oklahoma">Oklahoma</option>
+                            <option value="Alabama">Alabama</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Cotton Bowl: 2-Ohio State vs Winner 7/10</label>
+                        <select id="qe-game6">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Ohio State">Ohio State</option>
+                            <option value="Texas A&M">Texas A&M</option>
+                            <option value="Miami">Miami</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Sugar Bowl: 3-Georgia vs Winner 6/11</label>
+                        <select id="qe-game7">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Ole Miss">Ole Miss</option>
+                            <option value="Tulane">Tulane</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Orange Bowl: 4-Texas Tech vs Winner 5/12</label>
+                        <select id="qe-game8">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Texas Tech">Texas Tech</option>
+                            <option value="Oregon">Oregon</option>
+                            <option value="JMU">JMU</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 20px;">Semifinal Picks</h3>
+                <div class="picks-grid">
+                    <div class="form-group">
+                        <label>Fiesta Bowl: Winner Rose vs Winner Cotton</label>
+                        <select id="qe-game9">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Indiana">Indiana</option>
+                            <option value="Oklahoma">Oklahoma</option>
+                            <option value="Alabama">Alabama</option>
+                            <option value="Ohio State">Ohio State</option>
+                            <option value="Texas A&M">Texas A&M</option>
+                            <option value="Miami">Miami</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Peach Bowl: Winner Sugar vs Winner Orange</label>
+                        <select id="qe-game10">
+                            <option value="">-- Select Winner --</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Ole Miss">Ole Miss</option>
+                            <option value="Tulane">Tulane</option>
+                            <option value="Texas Tech">Texas Tech</option>
+                            <option value="Oregon">Oregon</option>
+                            <option value="JMU">JMU</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3 style="color: var(--gold); margin-bottom: 20px;">Championship Pick</h3>
+                <div class="form-group">
+                    <label>National Championship: Winner Fiesta vs Winner Peach</label>
+                    <select id="qe-champion">
+                        <option value="">-- Select Champion --</option>
+                        <option value="Indiana">Indiana</option>
+                        <option value="Oklahoma">Oklahoma</option>
+                        <option value="Alabama">Alabama</option>
+                        <option value="Ohio State">Ohio State</option>
+                        <option value="Texas A&M">Texas A&M</option>
+                        <option value="Miami">Miami</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Ole Miss">Ole Miss</option>
+                        <option value="Tulane">Tulane</option>
+                        <option value="Texas Tech">Texas Tech</option>
+                        <option value="Oregon">Oregon</option>
+                        <option value="JMU">JMU</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="save-btn" onclick="quickAddBracket()">
+                    ✅ Add This Bracket
+                </button>
+                <button class="save-btn" onclick="clearQuickEntry()" style="background: linear-gradient(135deg, #666 0%, #888 100%); margin-left: 15px;">
+                    🔄 Clear Form
+                </button>
+            </div>
+        </div>
+
         <!-- ENTER RESULTS TAB -->
-        <div id="results-tab" class="tab-content active">
+        <div id="results-tab" class="tab-content">
             <h2>Enter Game Results</h2>
             
             <div id="results-saved" class="success" style="display: none;">
@@ -686,6 +935,13 @@
             'Texas Tech': 'texas-tech.png'
         };
 
+        // Seed mapping for teams
+        const teamSeeds = {
+            'Indiana': 1, 'Ohio State': 2, 'Georgia': 3, 'Texas Tech': 4,
+            'Oregon': 5, 'Ole Miss': 6, 'Texas A&M': 7, 'Oklahoma': 8,
+            'Alabama': 9, 'Miami': 10, 'Tulane': 11, 'JMU': 12
+        };
+
         // Initialize
         window.onload = function() {
             loadResults();
@@ -706,6 +962,128 @@
             } else if (tabName === 'submissions') {
                 loadSubmissions();
             }
+        }
+
+        // Quick Entry Functions
+        function quickAddBracket() {
+            const errorDiv = document.getElementById('quick-entry-error');
+            const successDiv = document.getElementById('quick-entry-success');
+            
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Get form values
+            const name = document.getElementById('qe-name').value.trim();
+            const email = document.getElementById('qe-email').value.trim();
+            const tiebreaker = document.getElementById('qe-tiebreaker').value;
+            
+            // Validate basic info
+            if (!name || !email || !tiebreaker) {
+                errorDiv.textContent = '⚠️ Please fill out name, email, and tiebreaker!';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            
+            // Get all picks
+            const picks = {
+                firstRound: {},
+                quarters: {},
+                semis: {},
+                champion: null
+            };
+            
+            // First Round
+            for (let i = 1; i <= 4; i++) {
+                const teamName = document.getElementById(`qe-game${i}`).value;
+                if (!teamName) {
+                    errorDiv.textContent = `⚠️ Please select a winner for Game ${i}!`;
+                    errorDiv.style.display = 'block';
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                picks.firstRound[i] = { seed: teamSeeds[teamName], teamName };
+            }
+            
+            // Quarterfinals
+            for (let i = 5; i <= 8; i++) {
+                const teamName = document.getElementById(`qe-game${i}`).value;
+                if (!teamName) {
+                    errorDiv.textContent = `⚠️ Please select a winner for Game ${i}!`;
+                    errorDiv.style.display = 'block';
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                picks.quarters[i] = { seed: teamSeeds[teamName], teamName };
+            }
+            
+            // Semifinals
+            for (let i = 9; i <= 10; i++) {
+                const teamName = document.getElementById(`qe-game${i}`).value;
+                if (!teamName) {
+                    errorDiv.textContent = `⚠️ Please select a winner for Game ${i}!`;
+                    errorDiv.style.display = 'block';
+                    errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return;
+                }
+                picks.semis[i] = { seed: teamSeeds[teamName], teamName };
+            }
+            
+            // Champion
+            const champion = document.getElementById('qe-champion').value;
+            if (!champion) {
+                errorDiv.textContent = '⚠️ Please select a champion!';
+                errorDiv.style.display = 'block';
+                errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+            picks.champion = champion;
+            
+            // Create submission object
+            const submission = {
+                name,
+                email,
+                tiebreaker: parseInt(tiebreaker),
+                picks,
+                submittedAt: new Date().toISOString(),
+                id: Date.now() + '-' + Math.random().toString(36).substr(2, 9)
+            };
+            
+            // Save to localStorage
+            let submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+            
+            // Check for duplicate email
+            const existingIndex = submissions.findIndex(s => s.email === email);
+            if (existingIndex >= 0) {
+                submissions[existingIndex] = submission;
+                successDiv.textContent = `✅ Updated bracket for ${name}!`;
+            } else {
+                submissions.push(submission);
+                successDiv.textContent = `✅ Added bracket for ${name}!`;
+            }
+            
+            localStorage.setItem('cfp-submissions', JSON.stringify(submissions));
+            
+            successDiv.style.display = 'block';
+            successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+            // Clear form
+            setTimeout(() => {
+                clearQuickEntry();
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function clearQuickEntry() {
+            document.getElementById('qe-name').value = '';
+            document.getElementById('qe-email').value = '';
+            document.getElementById('qe-tiebreaker').value = '';
+            
+            for (let i = 1; i <= 10; i++) {
+                const select = document.getElementById(`qe-game${i}`);
+                if (select) select.value = '';
+            }
+            document.getElementById('qe-champion').value = '';
         }
 
         // Load saved results
@@ -767,8 +1145,6 @@
                 input.disabled = false;
                 input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
             }
-            
-            // Continue for semifinals and championship...
         }
 
         // Save results
@@ -800,7 +1176,7 @@
             
             const scored = submissions.map(sub => {
                 let points = 0;
-                let possible = 15; // Total possible points: 4+8+8+8 = 28, but only what's still alive
+                let possible = 15;
                 
                 // First round (1 point each)
                 for (let i = 1; i <= 4; i++) {
@@ -846,10 +1222,8 @@
                 };
             });
             
-            // Sort by points, then by tiebreaker proximity
             scored.sort((a, b) => {
                 if (b.points !== a.points) return b.points - a.points;
-                // Tiebreaker logic would go here
                 return 0;
             });
             
@@ -863,7 +1237,6 @@
             const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
             const gamesComplete = Object.keys(results).length;
             
-            // Update stats
             document.getElementById('total-players').textContent = scored.length;
             document.getElementById('games-complete').textContent = gamesComplete + ' / 11';
             if (scored.length > 0) {
@@ -931,7 +1304,6 @@
             document.getElementById('modal-player-name').textContent = sub.name + "'s Bracket";
             document.getElementById('bracket-modal').style.display = 'block';
             
-            // Display bracket details
             let html = '<div class="bracket-view">';
             html += '<div class="bracket-round"><h3 style="color: var(--gold);">First Round</h3>';
             Object.entries(sub.picks.firstRound).forEach(([matchup, pick]) => {
