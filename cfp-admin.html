@@ -1264,7 +1264,10 @@
                         <td>${player.possible}</td>
                         <td>${player.picks.champion || 'Not selected'}</td>
                         <td>${player.tiebreaker}</td>
-                        <td><button class="view-btn" onclick="viewBracket('${player.id}')">View Bracket</button></td>
+                        <td>
+                            <button class="view-btn" onclick="viewBracket('${player.id}')">View</button>
+                            <button class="view-btn danger-btn" onclick="deleteBracket('${player.id}', '${player.name}')" style="background: #d32f2f; margin-left: 5px;">Delete</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -1289,7 +1292,10 @@
                         <td>${date}</td>
                         <td>${sub.picks.champion || 'Not selected'}</td>
                         <td>${sub.tiebreaker}</td>
-                        <td><button class="view-btn" onclick="viewBracket('${sub.id}')">View</button></td>
+                        <td>
+                            <button class="view-btn" onclick="viewBracket('${sub.id}')">View</button>
+                            <button class="view-btn danger-btn" onclick="deleteBracket('${sub.id}', '${sub.name}')" style="background: #d32f2f; margin-left: 5px;">Delete</button>
+                        </td>
                     </tr>
                 `;
             }).join('');
@@ -1381,6 +1387,26 @@
             if (confirm('Are you sure you want to delete ALL player submissions? This cannot be undone!')) {
                 localStorage.removeItem('cfp-submissions');
                 location.reload();
+            }
+        }
+
+        // Delete individual bracket
+        function deleteBracket(id, name) {
+            if (confirm(`Are you sure you want to delete ${name}'s bracket?\n\nThis cannot be undone!`)) {
+                let submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
+                submissions = submissions.filter(s => s.id !== id);
+                localStorage.setItem('cfp-submissions', JSON.stringify(submissions));
+                
+                // If this was the user's own bracket, remove the ID
+                if (localStorage.getItem('my-bracket-id') === id) {
+                    localStorage.removeItem('my-bracket-id');
+                }
+                
+                // Refresh displays
+                updateLeaderboard();
+                loadSubmissions();
+                
+                alert(`✅ ${name}'s bracket has been deleted.`);
             }
         }
     </script>
