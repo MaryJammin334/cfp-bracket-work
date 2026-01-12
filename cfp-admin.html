@@ -1105,45 +1105,163 @@
         function updateGameOptions() {
             const results = JSON.parse(localStorage.getItem('cfp-results') || '{}');
             
-            // Quarterfinals
+            // Quarterfinals - populate from first round
             if (results.game4) {
                 const winner = results.game4.split('-')[1];
-                const seed = results.game4.split('-')[0];
                 const logoSrc = teamLogos[winner] || '';
-                const input = document.querySelector('input[name="game5"][value="tbd"]');
-                input.value = results.game4;
-                input.disabled = false;
-                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                const inputs = document.querySelectorAll('input[name="game5"]');
+                inputs.forEach(input => {
+                    if (input.value === 'tbd' || input.disabled) {
+                        input.value = results.game4;
+                        input.disabled = false;
+                        const label = input.closest('.game-team');
+                        if (label) {
+                            label.innerHTML = `<input type="radio" name="game5" value="${results.game4}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                        }
+                    }
+                });
             }
             
             if (results.game3) {
                 const winner = results.game3.split('-')[1];
-                const seed = results.game3.split('-')[0];
                 const logoSrc = teamLogos[winner] || '';
-                const input = document.querySelector('input[name="game6"][value="tbd"]');
-                input.value = results.game3;
-                input.disabled = false;
-                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                const inputs = document.querySelectorAll('input[name="game6"]');
+                inputs.forEach(input => {
+                    if (input.value === 'tbd' || input.disabled) {
+                        input.value = results.game3;
+                        input.disabled = false;
+                        const label = input.closest('.game-team');
+                        if (label) {
+                            label.innerHTML = `<input type="radio" name="game6" value="${results.game3}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                        }
+                    }
+                });
             }
             
             if (results.game2) {
                 const winner = results.game2.split('-')[1];
-                const seed = results.game2.split('-')[0];
                 const logoSrc = teamLogos[winner] || '';
-                const input = document.querySelector('input[name="game7"][value="tbd"]');
-                input.value = results.game2;
-                input.disabled = false;
-                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                const inputs = document.querySelectorAll('input[name="game7"]');
+                inputs.forEach(input => {
+                    if (input.value === 'tbd' || input.disabled) {
+                        input.value = results.game2;
+                        input.disabled = false;
+                        const label = input.closest('.game-team');
+                        if (label) {
+                            label.innerHTML = `<input type="radio" name="game7" value="${results.game2}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                        }
+                    }
+                });
             }
             
             if (results.game1) {
                 const winner = results.game1.split('-')[1];
-                const seed = results.game1.split('-')[0];
                 const logoSrc = teamLogos[winner] || '';
-                const input = document.querySelector('input[name="game8"][value="tbd"]');
-                input.value = results.game1;
-                input.disabled = false;
-                input.nextElementSibling.innerHTML = `<img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                const inputs = document.querySelectorAll('input[name="game8"]');
+                inputs.forEach(input => {
+                    if (input.value === 'tbd' || input.disabled) {
+                        input.value = results.game1;
+                        input.disabled = false;
+                        const label = input.closest('.game-team');
+                        if (label) {
+                            label.innerHTML = `<input type="radio" name="game8" value="${results.game1}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                        }
+                    }
+                });
+            }
+            
+            // Semifinals - populate from quarterfinals
+            // Fiesta Bowl (game 9) = Winner of Rose Bowl (game 5) vs Winner of Cotton Bowl (game 6)
+            if (results.game5) {
+                const winner = results.game5.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game9"]');
+                const firstInput = inputs[0];
+                if (firstInput && (firstInput.value === 'tbd' || firstInput.disabled)) {
+                    firstInput.value = results.game5;
+                    firstInput.disabled = false;
+                    const label = firstInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game9" value="${results.game5}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
+            }
+            
+            if (results.game6) {
+                const winner = results.game6.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game9"]');
+                const secondInput = inputs[1];
+                if (secondInput && (secondInput.value === 'tbd' || secondInput.disabled)) {
+                    secondInput.value = results.game6;
+                    secondInput.disabled = false;
+                    const label = secondInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game9" value="${results.game6}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
+            }
+            
+            // Peach Bowl (game 10) = Winner of Sugar Bowl (game 7) vs Winner of Orange Bowl (game 8)
+            if (results.game7) {
+                const winner = results.game7.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game10"]');
+                const firstInput = inputs[0];
+                if (firstInput && (firstInput.value === 'tbd' || firstInput.disabled)) {
+                    firstInput.value = results.game7;
+                    firstInput.disabled = false;
+                    const label = firstInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game10" value="${results.game7}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
+            }
+            
+            if (results.game8) {
+                const winner = results.game8.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game10"]');
+                const secondInput = inputs[1];
+                if (secondInput && (secondInput.value === 'tbd' || secondInput.disabled)) {
+                    secondInput.value = results.game8;
+                    secondInput.disabled = false;
+                    const label = secondInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game10" value="${results.game8}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
+            }
+            
+            // Championship (game 11) = Winner of Fiesta Bowl (game 9) vs Winner of Peach Bowl (game 10)
+            if (results.game9) {
+                const winner = results.game9.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game11"]');
+                const firstInput = inputs[0];
+                if (firstInput && (firstInput.value === 'tbd' || firstInput.disabled)) {
+                    firstInput.value = results.game9;
+                    firstInput.disabled = false;
+                    const label = firstInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game11" value="${results.game9}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
+            }
+            
+            if (results.game10) {
+                const winner = results.game10.split('-')[1];
+                const logoSrc = teamLogos[winner] || '';
+                const inputs = document.querySelectorAll('input[name="game11"]');
+                const secondInput = inputs[1];
+                if (secondInput && (secondInput.value === 'tbd' || secondInput.disabled)) {
+                    secondInput.value = results.game10;
+                    secondInput.disabled = false;
+                    const label = secondInput.closest('.game-team');
+                    if (label) {
+                        label.innerHTML = `<input type="radio" name="game11" value="${results.game10}"><img src="${logoSrc}" class="team-logo" alt="${winner}"><span>${winner}</span>`;
+                    }
+                }
             }
         }
 
