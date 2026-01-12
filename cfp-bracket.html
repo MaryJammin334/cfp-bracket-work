@@ -527,7 +527,7 @@
                     <div class="matchup" data-matchup="9">
                         <div class="bowl-name">FIESTA BOWL</div>
                         <div class="team tbd" id="s9-team1" data-team="tbd" onclick="selectSemi(9, 'team1')">
-                            <span class="team-name">Winner Rose Bowl</span>
+                            <span class="team-name">Winner Sugar Bowl</span>
                         </div>
                         <div class="team tbd" id="s9-team2" data-team="tbd" onclick="selectSemi(9, 'team2')">
                             <span class="team-name">Winner Cotton Bowl</span>
@@ -537,10 +537,10 @@
                     <div class="matchup" data-matchup="10">
                         <div class="bowl-name">PEACH BOWL</div>
                         <div class="team tbd" id="s10-team1" data-team="tbd" onclick="selectSemi(10, 'team1')">
-                            <span class="team-name">Winner Sugar Bowl</span>
+                            <span class="team-name">Winner Orange Bowl</span>
                         </div>
                         <div class="team tbd" id="s10-team2" data-team="tbd" onclick="selectSemi(10, 'team2')">
-                            <span class="team-name">Winner Orange Bowl</span>
+                            <span class="team-name">Winner Rose Bowl</span>
                         </div>
                     </div>
                 </div>
@@ -717,12 +717,14 @@
         function updateSemifinals(quarterMatchup, seed, teamName) {
             let semiMatchup, elementId;
             
-            if (quarterMatchup === 5 || quarterMatchup === 6) {
-                semiMatchup = 9;
-                elementId = quarterMatchup === 5 ? 's9-team1' : 's9-team2';
+            // Fiesta Bowl (game 9) = Sugar Bowl (game 7) winner vs Cotton Bowl (game 6) winner
+            // Peach Bowl (game 10) = Orange Bowl (game 8) winner vs Rose Bowl (game 5) winner
+            if (quarterMatchup === 7 || quarterMatchup === 6) {
+                semiMatchup = 9; // Fiesta Bowl
+                elementId = quarterMatchup === 7 ? 's9-team1' : 's9-team2';
             } else {
-                semiMatchup = 10;
-                elementId = quarterMatchup === 7 ? 's10-team1' : 's10-team2';
+                semiMatchup = 10; // Peach Bowl
+                elementId = quarterMatchup === 8 ? 's10-team1' : 's10-team2';
             }
             
             const element = document.getElementById(elementId);
