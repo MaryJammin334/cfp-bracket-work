@@ -811,6 +811,9 @@
 
             <div style="text-align: center; margin-top: 30px;">
                 <button class="save-btn" onclick="saveResults()">💾 Save Results & Update Leaderboard</button>
+                <button class="save-btn" onclick="clearAllGameResults()" style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); margin-left: 15px;">
+                    ↩️ Clear All Results
+                </button>
             </div>
         </div>
 
@@ -1287,6 +1290,32 @@
             updateLeaderboard();
         }
 
+        // Clear all game results
+        function clearAllGameResults() {
+            if (confirm('⚠️ Are you sure you want to clear ALL game results?\n\nThis will reset all winners and the leaderboard will recalculate.\n\nThis cannot be undone!')) {
+                // Clear all radio button selections
+                for (let i = 1; i <= 11; i++) {
+                    const radios = document.querySelectorAll(`input[name="game${i}"]`);
+                    radios.forEach(radio => radio.checked = false);
+                }
+                
+                // Clear localStorage
+                localStorage.removeItem('cfp-results');
+                
+                // Show confirmation
+                const savedDiv = document.getElementById('results-saved');
+                savedDiv.textContent = '✅ All results cleared! You can now re-enter game winners.';
+                savedDiv.style.display = 'block';
+                setTimeout(() => {
+                    savedDiv.style.display = 'none';
+                    savedDiv.textContent = '✅ Results saved! Leaderboard has been updated.';
+                }, 3000);
+                
+                // Refresh the page to reset everything
+                location.reload();
+            }
+        }
+
         // Calculate scores
         function calculateScores() {
             const submissions = JSON.parse(localStorage.getItem('cfp-submissions') || '[]');
@@ -1294,7 +1323,35 @@
             
             const scored = submissions.map(sub => {
                 let points = 0;
-                let possible = 15;
+                
+                // Calculate possible points remaining
+                let possibleRemaining = 0;
+                
+                // First round (1 point each) - 4 games
+                let firstRoundComplete = 0;
+                for (let i = 1; i <= 4; i++) {
+                    if (results['game' + i]) firstRoundComplete++;
+                }
+                possibleRemaining += (4 - firstRoundComplete) * 1; // Remaining first round games
+                
+                // Quarterfinals (2 points each) - 4 games
+                let quartersComplete = 0;
+                for (let i = 5; i <= 8; i++) {
+                    if (results['game' + i]) quartersComplete++;
+                }
+                possibleRemaining += (4 - quartersComplete) * 2; // Remaining quarterfinal games
+                
+                // Semifinals (4 points each) - 2 games
+                let semisComplete = 0;
+                for (let i = 9; i <= 10; i++) {
+                    if (results['game' + i]) semisComplete++;
+                }
+                possibleRemaining += (2 - semisComplete) * 4; // Remaining semifinal games
+                
+                // Championship (8 points) - 1 game
+                if (!results.game11) {
+                    possibleRemaining += 8; // Championship not played yet
+                }
                 
                 // First round (1 point each)
                 for (let i = 1; i <= 4; i++) {
@@ -1336,7 +1393,7 @@
                 return {
                     ...sub,
                     points,
-                    possible
+                    possible: possibleRemaining
                 };
             });
             
